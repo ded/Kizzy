@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Kizzy tests</title>
+    <script src="../src/kizzy.js"></script>
+    <script>
+
+    var cache = new Kizzy('test');
+    if (cache.get('thing')) {
+      console.log('from cache');
+    } else {
+      console.log('from live');
+      cache.set('thing', {
+        hello: 'world'
+      }, 5000);
+    }
+
+    console.log('value: ', cache.get('thing'));
+
+    </script>
+  </head>
+  <body>
+
+  </body>
+</html>
