@@ -3,7 +3,7 @@
   <head>
     <title>Kizzy tests</title>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" href="ded-tester.css" type="text/css">
+    <link rel="stylesheet" href="../build/sink/src/sink.css" type="text/css">
     <script src="../build/scriptjs/dist/script.min.js"></script>
     <script>
       function run() {
@@ -50,7 +50,7 @@
         init();
       }
 
-      $script(['ded-tester.js', '../src/kizzy.js'], function() {
+      $script(['../build/sink/src/sink.js', '../src/kizzy.js'], function() {
         if (typeof JSON === undefined) {
           $script('../build/json/json2.js', run);
         } else {
