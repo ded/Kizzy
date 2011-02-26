@@ -3,32 +3,42 @@
   * Copyright: @ded Dustin Diaz 2011
   * License: CC Attribution: http://creativecommons.org/licenses/by/3.0/
   */
-!function(win, doc, store) {
+!function(win, doc, localStorage, store) {
 
   var hasLocalStorage,
-      html5 = false;
+      html5 = 0,
+      writeThrough = function() {
+        return 1;
+      };
 
   try {
     // HTML5 local storage
-    hasLocalStorage = localStorage && localStorage !== null;
-    html5 = true;
-  } catch (ex) {
-    hasLocalStorage = false;
-    html5 = false;
+    hasLocalStorage = !!localStorage;
+    html5 = 1;
+  } catch (ex1) {
+    // IE local storage
+    try {
+      // this try / if is required. trust me
+      if (doc.documentElement.addBehavior) {
+        html5 = 0;
+        hasLocalStorage = 1;
+        var dataStore = doc.documentElement;
+        dataStore.addBehavior('#default#userData');
+        dataStore.load(store);
+        var xmlDoc = dataStore.xmlDocument;
+        var xmlDocEl = xmlDoc.documentElement;
+      }
+    } catch (ex2) {
+      hasLocalStorage = false;
+    }
   }
 
-  function noop(){}
-
-  function getTime () {
+  function time () {
     return +new Date();
   }
 
-  function writeThrough() {
-    return 1;
-  }
-
   function checkExpiry(inst, k) {
-    if (inst._[k] && inst._[k].e && inst._[k].e < getTime()) {
+    if (inst._[k] && inst._[k].e && inst._[k].e < time()) {
       inst.remove(k);
     }
   }
@@ -49,63 +59,8 @@
     return localStorage.removeItem(k);
   }
 
-  function html5clearLocalStorage(k) {
+  function html5clearLocalStorage() {
     return localStorage.clear();
-  }
-
-  function _Kizzy() {
-    this._ = {};
-  }
-
-  _Kizzy.prototype = {
-
-    set: function(k, v, optTtl) {
-      this._[k] = {
-        value: v,
-        e: isNumber(optTtl) ? getTime() + optTtl : 0
-      };
-      writeThrough(this) || this.remove(k);
-      return v;
-    },
-
-    get: function(k) {
-      checkExpiry(this, k);
-      return this._[k] ? this._[k].value : undefined;
-    },
-
-    remove: function(k) {
-      delete this._[k];
-      writeThrough(this);
-    },
-
-    clear: function() {
-      this._ = {};
-      writeThrough(this);
-    }
-  };
-
-  function Kizzy(ns) {
-    this.ns = ns;
-    this._ = JSON.parse(getLocalStorage(ns) || '{}');
-  }
-
-  Kizzy.prototype = _Kizzy.prototype;
-
-  // IE local storage
-  try {
-    // this try / if is required. trust me
-    if (doc.documentElement.addBehavior) {
-      html5 = false;
-      hasLocalStorage = true;
-      var dataStore = doc.documentElement;
-      dataStore.addBehavior('#default#userData');
-      dataStore.load(store);
-
-      var xmlDoc = dataStore.xmlDocument;
-      var xmlDocEl = xmlDoc.documentElement;
-    }
-  } catch (exp) {
-    hasLocalStorage = false;
   }
 
   function getNodeByName(name) {
@@ -147,11 +102,8 @@
     return value;
   }
 
-  function deleteUserData(name) {
-    var node = getNodeByName(name);
-    if (node) {
-      xmlDocEl.removeChild(node);
-    }
+  function removeUserData(name) {
+    getNodeByName(name) && xmlDocEl.removeChild(node);
     dataStore.save(store);
   }
 
@@ -162,26 +114,70 @@
     dataStore.save(store);
   }
 
-  var setLocalStorage = noop,
-      getLocalStorage = noop,
-      deleteLocalStorage = noop,
-      clearLocalStorage = noop;
+  function _Kizzy() {
+    this._ = {};
+  }
+
+  _Kizzy.prototype = {
+
+    set: function(k, v, optTtl) {
+      this._[k] = {
+        value: v,
+        e: isNumber(optTtl) ? time() + optTtl : 0
+      };
+      writeThrough(this) || this.remove(k);
+      return v;
+    },
+
+    get: function(k) {
+      checkExpiry(this, k);
+      return this._[k] ? this._[k].value : undefined;
+    },
+
+    remove: function(k) {
+      delete this._[k];
+      writeThrough(this);
+    },
+
+    clear: function() {
+      this._ = {};
+      writeThrough(this);
+    }
+  };
+
+  function Kizzy(ns) {
+    this.ns = ns;
+    this._ = JSON.parse(getLocalStorage(ns) || '{}');
+  }
+
+  Kizzy.prototype = _Kizzy.prototype;
+
+  win.Kizzy = function(ns) {
+    return new Kizzy(ns);
+  };
+
+  win.Kizzy.remove = function(ns) {
+    removeLocalStorage(ns);
+  };
+
+  win.Kizzy.clear = function() {
+    clearLocalStorage();
+  };
 
   if (hasLocalStorage) {
-    setLocalStorage = html5 ? html5setLocalStorage : setUserData;
-    getLocalStorage = html5 ? html5getLocalStorage : getUserData;
-    deleteLocalStorage = html5 ? html5removeLocalStorage : deleteUserData;
-    clearLocalStorage = html5 ? html5clearLocalStorage : clearUserData;
-    function writeThrough(inst) {
+    var setLocalStorage = html5 ? html5setLocalStorage : setUserData,
+        getLocalStorage = html5 ? html5getLocalStorage : getUserData,
+        removeLocalStorage = html5 ? html5removeLocalStorage : removeUserData,
+        clearLocalStorage = html5 ? html5clearLocalStorage : clearUserData;
+
+    writeThrough = function(inst) {
       try {
         setLocalStorage(inst.ns, JSON.stringify(inst._));
         return 1;
       } catch (x) {
         return 0;
       }
-    }
+    };
   }
 
-  win.Kizzy = Kizzy;
-
-}(window, document, document.domain);
+}(window, document, localStorage, document.domain);

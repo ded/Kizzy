@@ -28,19 +28,6 @@
     }
   }
 
-  if (hasLocalStorage) {
-    var setLocalStorage = html5 ? html5setLocalStorage : setUserData,
-        getLocalStorage = html5 ? html5getLocalStorage : getUserData;
-    writeThrough = function(inst) {
-      try {
-        setLocalStorage(inst.ns, JSON.stringify(inst._));
-        return 1;
-      } catch (x) {
-        return 0;
-      }
-    }
-  }
-
   function time () {
     return +new Date();
   }
@@ -67,7 +54,7 @@
     return localStorage.removeItem(k);
   }
 
-  function html5clearLocalStorage(k) {
+  function html5clearLocalStorage() {
     return localStorage.clear();
   }
 
@@ -110,7 +97,7 @@
     return value;
   }
 
-  function deleteUserData(name) {
+  function removeUserData(name) {
     getNodeByName(name) && xmlDocEl.removeChild(node);
     dataStore.save(store);
   }
@@ -160,9 +147,32 @@
 
   Kizzy.prototype = _Kizzy.prototype;
 
-  // expose
   win.Kizzy = function(ns) {
     return new Kizzy(ns);
   };
+
+  win.Kizzy.remove = function(ns) {
+    removeLocalStorage(ns);
+  };
+
+  win.Kizzy.clear = function() {
+    clearLocalStorage();
+  };
+
+  if (hasLocalStorage) {
+    var setLocalStorage = html5 ? html5setLocalStorage : setUserData,
+        getLocalStorage = html5 ? html5getLocalStorage : getUserData,
+        removeLocalStorage = html5 ? html5removeLocalStorage : removeUserData,
+        clearLocalStorage = html5 ? html5clearLocalStorage : clearUserData;
+
+    writeThrough = function(inst) {
+      try {
+        setLocalStorage(inst.ns, JSON.stringify(inst._));
+        return 1;
+      } catch (x) {
+        return 0;
+      }
+    };
+  }
 
 }(window, document, localStorage, document.domain);

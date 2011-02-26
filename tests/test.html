@@ -33,6 +33,14 @@
             }, 1000);
           });
 
+          test('should remove an entire key', 2, function() {
+            Kizzy('erin').set('is', 'awesome');
+            ok(Kizzy('erin').get('is') == 'awesome');
+            Kizzy.remove('erin');
+            ok(Kizzy('erin').get('is') == undefined);
+            Kizzy.clear();
+          });
+
           init();
 
         });
