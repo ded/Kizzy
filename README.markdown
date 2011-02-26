@@ -41,3 +41,6 @@ Lastly, you can pass an optional third argument to 'set' that tells the cache ho
       cache.get('Agent').name // => expired
     }, 6000);
 
+Kizzy whu?
+----------
+The name comes from Kunta Kinte, a Mandinka African warrior from the 1700's. After being brought into slavery, he had a daughter whom he named Kizzy, which translates to *stay put* in hopes that the family would stay together, but not stay a slave.
