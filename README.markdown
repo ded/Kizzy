@@ -47,7 +47,8 @@ The name comes from Kunta Kinte, a Mandinka African warrior from the 1700's. Aft
 
 Browser support
 ---------------
-Internet Explorer 6,7,8,9
-Firefox 2+ (when localStorage is enabled (the browser default))
-Chrome
-Safari 4+
+
+  * Internet Explorer 6,7,8,9
+  * Firefox 2+ (when localStorage is enabled (the browser default))
+  * Chrome
+  * Safari 4+
