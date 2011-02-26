@@ -1,7 +1,7 @@
 Kizzy - a Local Storage Utility
 -------------------------------
 
-Kizzy is a small, cross-browser, JavaScript local storage utility. It utilizes the HTML5 localStorage api when available, as well as Internet Explorer's persistent XML store — wrapped up in a easy to use, memcached-like interface. When neither of these features are available (unlikely), it falls back to an in-browser object store.
+Kizzy is a light-weight, cross-browser, JavaScript local storage utility. It utilizes the HTML5 localStorage api when available, as well as Internet Explorer's persistent XML store — wrapped up in a easy to use, memcached-like interface. When neither of these features are available (unlikely), it falls back to an in-browser object store.
 
 It looks like this
 
