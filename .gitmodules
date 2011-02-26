@@ -10,3 +10,6 @@
 [submodule "build/scriptjs"]
 	path = build/scriptjs
 	url = https://polvero@github.com/polvero/script.js.git
+[submodule "build/json"]
+	path = build/json
+	url = https://github.com/douglascrockford/JSON-js.git

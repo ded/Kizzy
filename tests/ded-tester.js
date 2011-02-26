@@ -22,7 +22,7 @@ function failure(li, check) {
   reset();
 }
 function pass(li, check) {
-  check.innerHTML = '√';
+  check.innerHTML = '✓';
   li.className = 'pass';
   reset();
 }
