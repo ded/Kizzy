@@ -44,3 +44,10 @@ Lastly, you can pass an optional third argument to 'set' that tells the cache ho
 Kizzy whu?
 ----------
 The name comes from Kunta Kinte, a Mandinka African warrior from the 1700's. After being brought into slavery, he had a daughter whom he named Kizzy, which translates to *stay put* in hopes that the family would stay together, but not stay a slave.
+
+Browser support
+---------------
+Internet Explorer 6,7,8,9
+Firefox 2+ (when localStorage is enabled (the browser default))
+Chrome
+Safari 4+
