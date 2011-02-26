@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-// building $kizzy.js requires node
-// to install node try "port install node"
-// if that doesn't work. see the instructions
-// https://github.com/ry/node/wiki/Installation
+/**
+  * building $kizzy.js requires node
+  * to install node try "port install node"
+  * if that doesn't work. see the instructions
+  * https://github.com/ry/node/wiki/Installation
+  */
 var fs = require('fs'),
     uglifyJs = require('./build/UglifyJS'),
     jshint = require('./build/jshint/jshint').JSHINT,
     gzip = require('./build/gzip/lib/gzip'),
 
-    BUILD_DIR   = 'build',
-    DIST_DIR    = 'dist',
-    SRC_DIR     = 'src',
-
-    jshint_opts = {boss: true, forin: true, browser: true};
+    BUILD_DIR = 'build',
+    DIST_DIR = 'dist',
+    SRC_DIR = 'src';
 
 console.log("Loading Kizzy source...");
 
@@ -21,7 +21,12 @@ var $kizzy = fs.readFileSync(SRC_DIR + '/kizzy.js', 'UTF-8'),
 
 console.log("Testing Kizzy against jshint...");
 
-jshint($kizzy, jshint_opts);
+jshint($kizzy, {
+  boss: true,
+  forin: true,
+  browser: true
+});
+
 var errors = [];
 jshint.errors.forEach(function (err) {
   //ignore these errors until jshint resolves https://github.com/jshint/jshint/issues#issue/20
@@ -31,7 +36,7 @@ jshint.errors.forEach(function (err) {
 });
 
 if (!errors.length) {
-  console.log('Congratulations. You are a very special and handsome person. <3 JSHint.');
+  console.log('Congratulations. No Errors. <3 JSHint.');
 } else {
   console.log(
       'JSHint is NOT happy with '

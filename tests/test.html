@@ -1,26 +1,46 @@
 <!DOCTYPE HTML>
 <html lang="en-us">
   <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>Kizzy tests</title>
-    <script src="../src/kizzy.js"></script>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="ded-tester.css" type="text/css">
+    <script src="../build/scriptjs/dist/script.min.js"></script>
     <script>
+      $script(['ded-tester.js', '../src/kizzy.js'], function() {
+        $script.domReady(function() {
 
-    var cache = new Kizzy('test');
-    if (cache.get('thing')) {
-      console.log('from cache');
-    } else {
-      console.log('from live');
-      cache.set('thing', {
-        hello: 'world'
-      }, 5000);
-    }
+          var cache = Kizzy('test');
+          cache.clear();
 
-    console.log('value: ', cache.get('thing'));
+          test('thing should be undefined', 1, function() {
+            ok(!cache.get('thing'));
+          });
 
+          test('should be defined after setting', 1, function() {
+            cache.set('thing', {
+              hello: 'world'
+            });
+            ok((cache.get('thing').hello == 'world'));
+          });
+
+          test('should be able to expire', 2, function() {
+            cache.set('thing', {
+              hello: 'world'
+            }, 500);
+            ok((cache.get('thing').hello == 'world')); // still defined
+            setTimeout(function() {
+              ok(!cache.get('thing')); // undefined
+            }, 1000);
+          });
+
+          init();
+
+        });
+      });
     </script>
   </head>
   <body>
-
+    <h1>Kizzy tests</h1>
+    <ol id="tests"></ol>
   </body>
 </html>

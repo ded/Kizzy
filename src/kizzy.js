@@ -1,18 +1,55 @@
-!function(win, doc, store) {
+!function(win, doc, localStorage, store) {
 
   var hasLocalStorage,
-      html5 = false;
+      html5 = 0,
+      writeThrough = function() {
+        return 1;
+      };
 
   try {
     // HTML5 local storage
-    hasLocalStorage = localStorage && localStorage !== null;
-    html5 = true;
-  } catch (ex) {
-    hasLocalStorage = false;
-    html5 = false;
+    hasLocalStorage = !!localStorage;
+    html5 = 1;
+  } catch (ex1) {
+    // IE local storage
+    try {
+      // this try / if is required. trust me
+      if (doc.documentElement.addBehavior) {
+        html5 = 0;
+        hasLocalStorage = 1;
+        var dataStore = doc.documentElement;
+        dataStore.addBehavior('#default#userData');
+        dataStore.load(store);
+        var xmlDoc = dataStore.xmlDocument;
+        var xmlDocEl = xmlDoc.documentElement;
+      }
+    } catch (ex2) {
+      hasLocalStorage = false;
+    }
   }
 
-  function noop(){}
+  if (hasLocalStorage) {
+    var setLocalStorage = html5 ? html5setLocalStorage : setUserData,
+        getLocalStorage = html5 ? html5getLocalStorage : getUserData;
+    writeThrough = function(inst) {
+      try {
+        setLocalStorage(inst.ns, JSON.stringify(inst._));
+        return 1;
+      } catch (x) {
+        return 0;
+      }
+    }
+  }
+
+  function time () {
+    return +new Date();
+  }
+
+  function checkExpiry(inst, k) {
+    if (inst._[k] && inst._[k].e && inst._[k].e < time()) {
+      inst.remove(k);
+    }
+  }
 
   function isNumber(n) {
     return typeof n === 'number' && isFinite(n);
@@ -26,87 +63,14 @@
     return localStorage.setItem(k, v);
   }
 
-  function html5deleteLocalStorage(k) {
+  function html5removeLocalStorage(k) {
     return localStorage.removeItem(k);
   }
 
-  function _Kizzy() {
-    this._cache = {};
+  function html5clearLocalStorage(k) {
+    return localStorage.clear();
   }
 
-  _Kizzy.prototype = {
-
-    set: function(k, v, optTtl) {
-      this._cache[k] = {
-        value: v,
-        expire: isNumber(optTtl) ? this._getTime() + optTtl : 0
-      };
-      this._writeThrough() || this.remove(k);
-      return v;
-    },
-
-    get: function(k) {
-      this._checkExpiry(k);
-      return this._cache[k] ? this._cache[k].value : undefined;
-    },
-
-    remove: function(k) {
-      delete this._cache[k];
-      this._writeThrough();
-    },
-
-    clear: function() {
-      this._cache = {};
-      this._writeThrough();
-    },
-
-    _checkExpiry: function(k) {
-      if (this._cache[k] && this._cache[k].expire && this._cache[k].expire < this._getTime()) {
-        this.remove(k);
-      }
-    },
-
-    _getTime: function() {
-      return +new Date();
-    },
-
-    _writeThrough: function() {
-      return 1;
-    }
-  };
-
-  function Kizzy(ns) {
-    this._namespace = ns;
-    this._cache = JSON.parse(getLocalStorage(ns) || '{}');
-  }
-
-  Kizzy.prototype = new _Kizzy();
-
-  Kizzy.prototype._writeThrough = function() {
-    try {
-      setLocalStorage(this._namespace, JSON.stringify(this._cache));
-      return 1;
-    } catch (ex) {
-      return 0;
-    }
-  };
-
-  // IE local storage
-  try {
-    // this try / if is required. trust me
-    if (doc.documentElement.addBehavior) {
-      html5 = false;
-      hasLocalStorage = true;
-      var dataStore = doc.documentElement;
-      dataStore.addBehavior('#default#userData');
-      dataStore.load(store);
-
-      var xmlDoc = dataStore.xmlDocument;
-      var xmlDocEl = xmlDoc.documentElement;
-    }
-  } catch (exp) {
-    hasLocalStorage = false;
-  }
   function getNodeByName(name) {
     var childNodes = xmlDocEl.childNodes,
         node,
@@ -147,10 +111,7 @@
   }
 
   function deleteUserData(name) {
-    var node = getNodeByName(name);
-    if (node) {
-      xmlDocEl.removeChild(node);
-    }
+    getNodeByName(name) && xmlDocEl.removeChild(node);
     dataStore.save(store);
   }
 
@@ -161,18 +122,47 @@
     dataStore.save(store);
   }
 
-  var setLocalStorage = noop,
-      getLocalStorage = noop,
-      deleteLocalStorage = noop,
-      clearLocalStorage = noop;
-
-  if (hasLocalStorage) {
-    setLocalStorage = html5 ? html5setLocalStorage : setUserData;
-    getLocalStorage = html5 ? html5getLocalStorage : getUserData;
-    deleteLocalStorage = html5 ? html5deleteLocalStorage : deleteUserData;
-    clearLocalStorage = html5 ? html5deleteLocalStorage : clearUserData;
+  function _Kizzy() {
+    this._ = {};
   }
 
-  win.Kizzy = Kizzy;
+  _Kizzy.prototype = {
 
-}(window, document, document.domain);
+    set: function(k, v, optTtl) {
+      this._[k] = {
+        value: v,
+        e: isNumber(optTtl) ? time() + optTtl : 0
+      };
+      writeThrough(this) || this.remove(k);
+      return v;
+    },
+
+    get: function(k) {
+      checkExpiry(this, k);
+      return this._[k] ? this._[k].value : undefined;
+    },
+
+    remove: function(k) {
+      delete this._[k];
+      writeThrough(this);
+    },
+
+    clear: function() {
+      this._ = {};
+      writeThrough(this);
+    }
+  };
+
+  function Kizzy(ns) {
+    this.ns = ns;
+    this._ = JSON.parse(getLocalStorage(ns) || '{}');
+  }
+
+  Kizzy.prototype = _Kizzy.prototype;
+
+  // expose
+  win.Kizzy = function(ns) {
+    return new Kizzy(ns);
+  };
+
+}(window, document, localStorage, document.domain);
