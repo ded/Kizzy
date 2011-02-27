@@ -52,7 +52,7 @@
   }
 
   function html5removeLocalStorage(k) {
-    localStorage[k];
+    delete localStorage[k];
   }
 
   function html5clearLocalStorage() {

@@ -34,9 +34,9 @@
 
           test('cache should be able to remove an entire key', 2, function() {
             Kizzy('erin').set('is', 'awesome');
-            ok(Kizzy('erin').get('is') == 'awesome');
+            ok(Kizzy('erin').get('is') == 'awesome', 'cache is defined');
             Kizzy.remove('erin');
-            ok(Kizzy('erin').get('is') == undefined);
+            ok(Kizzy('erin').get('is') == undefined, 'now cache is undefined');
           });
 
           test('cache should be able to be cleared entirely', 2, function() {
