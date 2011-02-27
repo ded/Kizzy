@@ -7,47 +7,46 @@
     <script src="../build/scriptjs/dist/script.min.js"></script>
     <script>
       function run() {
+        start(function(test, ok) {
+          var cache = Kizzy('test');
+          cache.clear();
 
-        var cache = Kizzy('test');
-        cache.clear();
-
-        test('cache should be undefined', 1, function() {
-          ok(!cache.get('thing'));
-        });
-
-        test('cache should be defined after setting', 1, function() {
-          cache.set('thing', {
-            hello: 'world'
-          });
-          ok((cache.get('thing').hello == 'world'));
-        });
-
-        test('cache should be able to expire', 2, function() {
-          cache.set('thing', {
-            hello: 'world'
-          }, 500);
-          ok((cache.get('thing').hello == 'world'));
-          setTimeout(function() {
+          test('cache should be undefined', 1, function() {
             ok(!cache.get('thing'));
-          }, 1000);
-        });
+          });
 
-        test('cache should be able to remove an entire key', 2, function() {
-          Kizzy('erin').set('is', 'awesome');
-          ok(Kizzy('erin').get('is') == 'awesome');
-          Kizzy.remove('erin');
-          ok(Kizzy('erin').get('is') == undefined);
-        });
+          test('cache should be defined after setting', 1, function() {
+            cache.set('thing', {
+              hello: 'world'
+            });
+            ok((cache.get('thing').hello == 'world'));
+          });
 
-        test('cache should be able to be cleared entirely', 2, function() {
-          Kizzy('dustin').set('is', 'nerdy');
-          Kizzy('cats').set('are', 'weird');
-          Kizzy.clear();
-          ok(Kizzy('dustin').get('is') == undefined);
-          ok(Kizzy('cats').get('are') == undefined);
-        });
+          test('cache should be able to expire', 2, function() {
+            cache.set('thing', {
+              hello: 'world'
+            }, 500);
+            ok((cache.get('thing').hello == 'world'));
+            setTimeout(function() {
+              ok(!cache.get('thing'));
+            }, 1000);
+          });
 
-        init();
+          test('cache should be able to remove an entire key', 2, function() {
+            Kizzy('erin').set('is', 'awesome');
+            ok(Kizzy('erin').get('is') == 'awesome');
+            Kizzy.remove('erin');
+            ok(Kizzy('erin').get('is') == undefined);
+          });
+
+          test('cache should be able to be cleared entirely', 2, function() {
+            Kizzy('dustin').set('is', 'nerdy');
+            Kizzy('cats').set('are', 'weird');
+            Kizzy.clear();
+            ok(Kizzy('dustin').get('is') == undefined);
+            ok(Kizzy('cats').get('are') == undefined);
+          });
+        });
       }
 
       $script(['../build/sink/src/sink.js', '../src/kizzy.js'], function() {
