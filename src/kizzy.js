@@ -4,14 +4,14 @@
       html5 = 0,
       writeThrough = function() {
         return 1;
-      };
-
+      }
   try {
     // HTML5 local storage
     hasLocalStorage = !!localStorage || !!globalStorage;
     localStorage = localStorage || globalStorage[store];
     html5 = 1;
   } catch (ex1) {
+    html5 = 0;
     // IE local storage
     try {
       // this try / if is required. trust me
@@ -27,6 +27,10 @@
     } catch (ex2) {
       hasLocalStorage = false;
     }
+  }
+
+  function noop () {
+
   }
 
   function time () {
@@ -174,6 +178,16 @@
         return 0;
       }
     };
+  } else {
+    var setLocalStorage = noop,
+        getLocalStorage = noop,
+        removeLocalStorage = function(ns) {
+
+        },
+        clearLocalStorage = function() {
+
+        };
+
   }
 
 }(window, document, localStorage, document.domain);
