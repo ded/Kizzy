@@ -9,13 +9,14 @@
       html5 = 0,
       writeThrough = function() {
         return 1;
-      };
-
+      }
   try {
     // HTML5 local storage
-    hasLocalStorage = !!localStorage;
+    hasLocalStorage = !!localStorage || !!globalStorage;
+    localStorage = localStorage || globalStorage[store];
     html5 = 1;
   } catch (ex1) {
+    html5 = 0;
     // IE local storage
     try {
       // this try / if is required. trust me
@@ -33,6 +34,10 @@
     }
   }
 
+  function noop () {
+
+  }
+
   function time () {
     return +new Date();
   }
@@ -48,19 +53,20 @@
   }
 
   function html5getLocalStorage(k) {
-    return localStorage.getItem(k);
+    return localStorage[k];
   }
 
   function html5setLocalStorage(k, v) {
-    return localStorage.setItem(k, v);
+    localStorage[k] = v;
+    return v;
   }
 
   function html5removeLocalStorage(k) {
-    return localStorage.removeItem(k);
+    delete localStorage[k];
   }
 
   function html5clearLocalStorage() {
-    return localStorage.clear();
+    localStorage.clear();
   }
 
   function getNodeByName(name) {
@@ -178,6 +184,16 @@
         return 0;
       }
     };
+  } else {
+    var setLocalStorage = noop,
+        getLocalStorage = noop,
+        removeLocalStorage = function(ns) {
+
+        },
+        clearLocalStorage = function() {
+
+        };
+
   }
 
 }(window, document, localStorage, document.domain);

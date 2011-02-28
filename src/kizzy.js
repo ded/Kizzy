@@ -52,7 +52,8 @@
   }
 
   function html5setLocalStorage(k, v) {
-    return localStorage[k] = v;
+    localStorage[k] = v;
+    return v;
   }
 
   function html5removeLocalStorage(k) {
