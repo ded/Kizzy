@@ -52,3 +52,13 @@ Browser support
   * Firefox 2+ (when localStorage is enabled (the browser default))
   * Chrome
   * Safari 4+
+
+Building Kizzy Yourself
+---------------------------------
+
+Building Kizzy requires node, (eg: port install node), a *submodule update --init* (for Uglify, gzip, JSHint, and sink tests). Then simply run *node Makefile.js*
+
+Running tests
+------------------
+
+To run tests, run tests/test.html in a browser uploaded to a real web-server. Otherwise they won't work in Firefox on a file:/// protocol.
