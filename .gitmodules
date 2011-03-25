@@ -9,7 +9,7 @@
 	url = https://github.com/donnerjack13589/node.gzip.git
 [submodule "build/scriptjs"]
 	path = build/scriptjs
-	url = https://polvero@github.com/polvero/script.js.git
+	url = https://github.com/ded/script.js.git
 [submodule "build/json"]
 	path = build/json
 	url = https://github.com/douglascrockford/JSON-js.git
