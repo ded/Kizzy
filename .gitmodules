@@ -15,4 +15,4 @@
 	url = https://github.com/douglascrockford/JSON-js.git
 [submodule "build/sink"]
 	path = build/sink
-	url = git://github.com/polvero/sink-test.git
+	url = git://github.com/ded/sink-test.git
