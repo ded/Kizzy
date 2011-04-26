@@ -1,14 +1,20 @@
 <!DOCTYPE HTML>
 <html lang="en-us">
   <head>
-    <title>Kizzy tests</title>
+    <title>kizzy tests</title>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="../build/sink/src/sink.css" type="text/css">
-    <script src="../build/scriptjs/dist/script.min.js"></script>
+    <script src="../build/sink/src/sink.js"></script>
+    <script src="../src/kizzy.js"></script>
+    <script src="../build/json/json2.js"></script>
+  </head>
+  <body>
+    <h1>Kizzy tests</h1>
+    <ol id="tests"></ol>
     <script>
-      function run() {
-        sink(function(test, ok) {
-          var cache = Kizzy('test');
+
+        sink('Kizzy', function(test, ok) {
+          var cache = kizzy('test');
           cache.clear();
 
           test('cache should be undefined', 1, function() {
@@ -33,33 +39,22 @@
           });
 
           test('cache should be able to remove an entire key', 2, function() {
-            Kizzy('erin').set('is', 'awesome');
-            ok(Kizzy('erin').get('is') == 'awesome', 'cache is defined');
-            Kizzy.remove('erin');
-            ok(Kizzy('erin').get('is') == undefined, 'now cache is undefined');
+            kizzy('erin').set('is', 'awesome');
+            ok(kizzy('erin').get('is') == 'awesome', 'cache is defined');
+            kizzy.remove('erin');
+            ok(kizzy('erin').get('is') == undefined, 'now cache is undefined');
           });
 
           test('cache should be able to be cleared entirely', 2, function() {
-            Kizzy('dustin').set('is', 'nerdy');
-            Kizzy('cats').set('are', 'weird');
-            Kizzy.clear();
-            ok(Kizzy('dustin').get('is') == undefined);
-            ok(Kizzy('cats').get('are') == undefined);
+            kizzy('dustin').set('is', 'nerdy');
+            kizzy('cats').set('are', 'weird');
+            kizzy.clear();
+            ok(kizzy('dustin').get('is') == undefined);
+            ok(kizzy('cats').get('are') == undefined);
           });
         });
-      }
 
-      $script(['../build/sink/src/sink.js', '../src/kizzy.js'], function() {
-        if (typeof JSON === undefined) {
-          $script('../build/json/json2.js', run);
-        } else {
-          run();
-        }
-      });
+        start();
     </script>
-  </head>
-  <body>
-    <h1>Kizzy tests</h1>
-    <ol id="tests"></ol>
   </body>
 </html>

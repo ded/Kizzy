@@ -1,0 +1,24 @@
+require('smoosh').config({
+  "JAVASCRIPT": {
+    "DIST_DIR": "./",
+    "kizzy": [
+      "./src/header.js",
+      "./src/kizzy.js"
+    ]
+  },
+  "JSHINT_OPTS": {
+    "boss": true,
+    "forin": false,
+    "curly": true,
+    "debug": false,
+    "devel": false,
+    "evil": false,
+    "regexp": false,
+    "undef": false,
+    "sub": false,
+    "white": true,
+    "indent": 2,
+    "whitespace": true,
+    "asi": false
+  }
+}).run().build().analyze();
