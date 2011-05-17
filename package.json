@@ -1,7 +1,7 @@
 {
   "name": "kizzy",
   "description": "x-browser LocalStorage API with a memcached interface",
-  "keywords": ["cache", "local storage", "caching", "expiration", "dom"],
+  "keywords": ["ender", "cache", "local storage", "caching", "expiration", "dom"],
   "version": "0.0.1",
   "homepage": "https://github.com/ded/kizzy",
   "author": "Dustin Diaz <@ded>",
