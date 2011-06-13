@@ -17,7 +17,9 @@
   try {
     // HTML5 local storage
     hasLocalStorage = !!localStorage || !!globalStorage;
-    localStorage = localStorage || globalStorage[store];
+    if(!localStorage){
+        localStorage = globalStorage[store];
+    }
     html5 = 1;
   } catch (ex1) {
     html5 = 0;
