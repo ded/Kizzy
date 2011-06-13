@@ -1,4 +1,4 @@
-!function (win, doc, localStorage, store) {
+!function (win, doc, store) {
 
   function noop() {}
 
@@ -12,8 +12,8 @@
   try {
     // HTML5 local storage
     hasLocalStorage = !!localStorage || !!globalStorage;
-    if(!localStorage){
-        localStorage = globalStorage[store];
+    if (!localStorage) {
+      localStorage = globalStorage[store];
     }
     html5 = 1;
   } catch (ex1) {
@@ -188,4 +188,4 @@
 
   typeof module !== 'undefined' && module.exports && (module.exports.cache = kizzy);
 
-}(this, document, localStorage, document.domain);
+}(this, document, document.domain);
