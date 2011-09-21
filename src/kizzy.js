@@ -48,7 +48,12 @@
 
     writeThrough = function (inst) {
       try {
-        setLocalStorage(inst.ns, JSON.stringify(inst._));
+        var v = JSON.stringify(inst._);
+        if( v == '{}' ) {
+          removeLocalStorage(inst.ns);
+        } else {
+          setLocalStorage(inst.ns, v);
+        }
         return 1;
       } catch (x) {
         return 0;
@@ -166,6 +171,13 @@
 
     clear: function () {
       this._ = {};
+      writeThrough(this);
+    },
+    
+    clearExpireds: function() {
+      for( var k in this._ ) {
+        checkExpiry(this,k);
+      }
       writeThrough(this);
     }
   };
