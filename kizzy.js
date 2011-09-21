@@ -53,7 +53,12 @@
 
     writeThrough = function (inst) {
       try {
-        setLocalStorage(inst.ns, JSON.stringify(inst._));
+        var v = JSON.stringify(inst._);
+        if( v == '{}' ) {
+          removeLocalStorage(inst.ns);
+        } else {
+          setLocalStorage(inst.ns, v);
+        }
         return 1;
       } catch (x) {
         return 0;
