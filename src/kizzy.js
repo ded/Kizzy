@@ -167,6 +167,13 @@
     clear: function () {
       this._ = {};
       writeThrough(this);
+    },
+    
+    clearExpireds: function() {
+      for( var k in this._ ) {
+        checkExpiry(this,k);
+      }
+      writeThrough(this);
     }
   };
 
