@@ -3,10 +3,10 @@
   <head>
     <title>kizzy tests</title>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" href="../build/sink/src/sink.css" type="text/css">
-    <script src="../build/sink/src/sink.js"></script>
+    <link rel="stylesheet" href="../node_modules/sink-test/src/sink.css" type="text/css">
+    <script src="../node_modules/sink-test/src/sink.js"></script>
     <script src="../src/kizzy.js"></script>
-    <script src="../build/json/json2.js"></script>
+    <script src="./json.js"></script>
   </head>
   <body>
     <h1>Kizzy tests</h1>
@@ -52,17 +52,17 @@
             ok(kizzy('dustin').get('is') == undefined);
             ok(kizzy('cats').get('are') == undefined);
           });
-          
+
           test('cache should be able to clear all expireds', 3, function() {
             cache.set('to-expire', 'oh-no', 500);
-            cache.set('to-not-expire', 'oh-yes', 10000);          
+            cache.set('to-not-expire', 'oh-yes', 10000);
             setTimeout(function() {
               cache.clearExpireds();
               ok(cache._['to-expire'] == undefined, 'expired key should be removed');
               ok(cache._['to-not-expire'] != undefined, 'not expired key should not be removed');
               ok(cache.get('to-not-expire') == 'oh-yes', 'value should keep');
             },1000);
-          });          
+          });
         });
 
         start();
