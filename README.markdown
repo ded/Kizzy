@@ -52,7 +52,7 @@ Browser support
 Building Kizzy
 ---------------------------------
 
-    $ submodule update --init
+    $ git submodule update --init
     & make
 
 Running tests
