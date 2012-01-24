@@ -52,8 +52,13 @@ Browser support
 Building Kizzy
 ---------------------------------
 
-    $ git submodule update --init
-    & make
+    $ git submodule update --init & make
+
+Rebuilding Kizzy
+---------------------------------
+Change should be made to src/kizzy.js.  Including those changes in the kizzy build is as simple as calling make.
+
+    $ make
 
 Running tests
 ------------------
