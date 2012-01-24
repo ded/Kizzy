@@ -92,7 +92,17 @@
   }
 
   function html5setLocalStorage(k, v) {
-    localStorage[k] = v
+    try {
+      localStorage[k] = v;
+    } catch(e) {
+      if(e == QUOTA_EXCEEDED_ERR) {
+        // clear cache and start fresh
+        // At least for now, this'll be easier
+        // than culling (for example), 1/2 of the cache items
+        // based on date of creation (which would mean we'd have to order the ls cache items)
+        html5clearLocalStorage();
+      }
+    }
     return v
   }
 
@@ -162,21 +172,24 @@
   _Kizzy.prototype = {
 
     set: function (k, v, optTtl) {
-      this._[k] = {
+      var key = this._prefixKey(k);
+      this._[key] = {
         value: v,
-        e: isNumber(optTtl) ? time() + optTtl : 0
+        e: isNumber(optTtl) ? time() + optTtl : this.options.timeout
       }
       writeThrough(this) || this.remove(k)
       return v
     },
 
     get: function (k) {
-      checkExpiry(this, k)
-      return this._[k] ? this._[k].value : undefined
+      var key = this._prefixKey(k);
+      checkExpiry(this, key)
+      return this._[key] ? this._[key].value : undefined
     },
 
     remove: function (k) {
-      delete this._[k];
+      var key = this._prefixKey(k);
+      delete this._[key];
       writeThrough(this)
     },
 
@@ -186,22 +199,35 @@
     },
 
     clearExpireds: function() {
+      var key;
       for (var k in this._) {
+        key = this._prefixKey(k);
         checkExpiry(this, k)
       }
       writeThrough(this)
+    },
+
+    _prefixKey: function(k) {
+      return this.key_prefix + '#' + k;
     }
   }
 
-  function Kizzy(ns) {
-    this.ns = ns
+  function Kizzy(ns, opts) {
+    this.options = opts;
+    this.ns = ns;
     this._ = JSON.parse(getLocalStorage(ns) || '{}')
   }
 
   Kizzy.prototype = _Kizzy.prototype
 
-  function kizzy(ns) {
-    return new Kizzy(ns)
+  function kizzy(ns, opts) {
+    var defaults = {
+      timeout: 300,
+      key_prefix: location.host
+    };
+    // yep, going to want to get rid of extend
+    var options = $.extend({}, defaults, opts);
+    return new Kizzy(ns, options);
   }
 
   kizzy.remove = removeLocalStorage
