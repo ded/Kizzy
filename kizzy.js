@@ -63,7 +63,7 @@
         if( v == '{}' ) {
           removeLocalStorage(inst.ns)
         } else {
-          setLocalStorage(inst.ns, v)
+          setLocalStorage(inst, inst.ns, v)
         }
         return 1
       } catch (x) {
@@ -91,7 +91,7 @@
     return localStorage[k]
   }
 
-  function html5setLocalStorage(k, v) {
+  function html5setLocalStorage(inst, k, v) {
     try {
       localStorage[k] = v;
     } catch(e) {
@@ -100,6 +100,8 @@
         // At least for now, this'll be easier
         // than culling (for example), 1/2 of the cache items
         // based on date of creation (which would mean we'd have to order the ls cache items)
+        // another option is to clear expired items.  For now we'll just clear everything.
+        // inst.clearExpireds();
         html5clearLocalStorage();
       }
     }
@@ -138,7 +140,7 @@
     return returnVal
   }
 
-  function setUserData(name, value) {
+  function setUserData(inst, name, value) {
     var node = getNodeByName(name)
     if (!node) {
       node = xmlDoc.createNode(1, "item", "")
