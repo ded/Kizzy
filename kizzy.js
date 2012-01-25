@@ -220,7 +220,7 @@
   Kizzy.prototype = _Kizzy.prototype
 
   function kizzy(ns, timeout) {
-    timeout = isNumber(timeout) ? timeout : 1000 * 60 * 3; // defaults to 3 minute expiration
+    timeout = isNumber(timeout) ? timeout : 0;
     return new Kizzy(ns, timeout);
   }
 
