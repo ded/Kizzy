@@ -1,3 +1,9 @@
+/*!
+  * Kizzy - a cross-browser LocalStorage API
+  * Copyright: Dustin Diaz 2012
+  * https://github.com/ded/kizzy
+  * License: MIT
+  */
 !function (name, definition) {
   if (typeof module != 'undefined') module.exports = definition()
   else if (typeof define == 'function' && typeof define.amd == 'object') define(definition)
@@ -168,24 +174,21 @@
   _Kizzy.prototype = {
 
     set: function (k, v, optTtl) {
-      var key = this._prefixKey(k);
-      this._[key] = {
+      this._[k] = {
         value: v,
-        e: isNumber(optTtl) ? time() + optTtl : this.options.timeout
+        e: isNumber(optTtl) ? time() + optTtl : this.options.timeout ? time() + this.options.timeout : 0
       }
       writeThrough(this) || this.remove(k)
       return v
     },
 
     get: function (k) {
-      var key = this._prefixKey(k);
-      checkExpiry(this, key)
-      return this._[key] ? this._[key].value : undefined
+      checkExpiry(this, k)
+      return this._[k] ? this._[k].value : undefined
     },
 
     remove: function (k) {
-      var key = this._prefixKey(k);
-      delete this._[key];
+      delete this._[k];
       writeThrough(this)
     },
 
@@ -195,16 +198,10 @@
     },
 
     clearExpireds: function() {
-      var key;
       for (var k in this._) {
-        key = this._prefixKey(k);
         checkExpiry(this, k)
       }
       writeThrough(this)
-    },
-
-    _prefixKey: function(k) {
-      return this.key_prefix + '#' + k;
     }
   }
 
@@ -218,8 +215,7 @@
 
   function kizzy(ns, opts) {
     var defaults = {
-      timeout: 300,
-      key_prefix: location.host
+      timeout: 60 * 3 * 1000
     };
     // yep, going to want to get rid of extend
     var options = $.extend({}, defaults, opts);
