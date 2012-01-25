@@ -47,7 +47,7 @@ You can define a default timeout for all cache objects within a particular insta
 
     var agent = cache.get('Agent') || cache.set('Agent', {
       name: 'Agent Diaz'
-    }); // time to live set for 5 seconds
+    });
 
     // wait 3 seconds...
     setTimeout(function() {
@@ -64,8 +64,8 @@ A default expiration can be overridden by the optional 3rd argument in a set cal
     var cache = kizzy('users', 5000); // all cache instances will default to a 5 second expiration
 
     var agent = cache.get('Agent') || cache.set('Agent', {
-      name: 'Agent Diaz'
-    }, 3000); // time to live set for 5 seconds
+      name: 'Agent Diaz' 
+    }, 3000); // time to live set for 3 seconds
 
     // 4 seconds later...
     setTimeout(function() {
