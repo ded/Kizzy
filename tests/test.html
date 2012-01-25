@@ -63,8 +63,24 @@
               ok(cache.get('to-not-expire') == 'oh-yes', 'value should keep');
             },1000);
           });
+          test('cache expiration should be able to be set in kizzy()', 1, function() {
+            cache = kizzy('timeout', 500);
+            cache.clear();
+            cache.set('hello', 'world');
+            setTimeout(function() {
+              cache.clearExpireds();
+              ok(cache._['hello'] === undefined, 'expired key should be removed');
+            },1000);
+          });
+          test('cache expiration value set in "optional" third argument should override kizzy() expiration', 1, function() {
+            cache = kizzy('timeout', 500);
+            cache.clear();
+            cache.set('hello', 'world', 1000);
+            setTimeout(function() {
+              ok(cache.get('hello') == 'world', 'value should keep');
+            },750);
+          });
         });
-
         start();
     </script>
   </body>

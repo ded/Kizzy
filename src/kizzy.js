@@ -176,7 +176,7 @@
     set: function (k, v, optTtl) {
       this._[k] = {
         value: v,
-        e: isNumber(optTtl) ? time() + optTtl : this.options.timeout ? time() + this.options.timeout : 0
+        e: isNumber(optTtl) ? time() + optTtl : this.timeout && isNumber(this.timeout) ? time() + this.timeout : 0
       }
       writeThrough(this) || this.remove(k)
       return v
@@ -205,21 +205,17 @@
     }
   }
 
-  function Kizzy(ns, opts) {
-    this.options = opts;
+  function Kizzy(ns, timeout) {
+    this.timeout = timeout;
     this.ns = ns;
     this._ = JSON.parse(getLocalStorage(ns) || '{}')
   }
 
   Kizzy.prototype = _Kizzy.prototype
 
-  function kizzy(ns, opts) {
-    var defaults = {
-      timeout: 60 * 3 * 1000
-    };
-    // yep, going to want to get rid of extend
-    var options = $.extend({}, defaults, opts);
-    return new Kizzy(ns, options);
+  function kizzy(ns, timeout) {
+    timeout = isNumber(timeout) ? timeout : 1000 * 60 * 3; // defaults to 3 minute expiration
+    return new Kizzy(ns, timeout);
   }
 
   kizzy.remove = removeLocalStorage
