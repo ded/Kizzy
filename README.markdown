@@ -22,7 +22,7 @@ Furthermore, a call to 'set' will return the value, making it quite easy for ass
       name: 'Agent Diaz'
     });
 
-Lastly, you can pass an optional third argument to 'set' that tells the cache how long to live
+You can pass an optional third argument to 'set' that tells the cache how long to live.
 
     var cache = kizzy('users');
 
@@ -41,6 +41,37 @@ Lastly, you can pass an optional third argument to 'set' that tells the cache ho
       cache.get('Agent').name // => expired
     }, 6000);
 
+You can define a default timeout for all cache objects within a particular instance.
+
+    var cache = kizzy('users', 5000); // all cache instances will default to a 5 second expiration
+
+    var agent = cache.get('Agent') || cache.set('Agent', {
+      name: 'Agent Diaz'
+    });
+
+    // wait 3 seconds...
+    setTimeout(function() {
+      alert('Still there ' + cache.get('Agent').name);
+    }, 3000);
+
+    // 6 seconds later...
+    setTimeout(function() {
+      cache.get('Agent').name // => expired
+    }, 6000);
+
+A default expiration can be overridden by the optional 3rd argument in a set call.
+
+    var cache = kizzy('users', 5000); // all cache instances will default to a 5 second expiration
+
+    var agent = cache.get('Agent') || cache.set('Agent', {
+      name: 'Agent Diaz' 
+    }, 3000); // time to live set for 3 seconds
+
+    // 4 seconds later...
+    setTimeout(function() {
+      cache.get('Agent').name // => expired
+    }, 4000);
+
 Browser support
 ---------------
 
@@ -52,8 +83,13 @@ Browser support
 Building Kizzy
 ---------------------------------
 
-    $ submodule update --init
-    & make
+    $ git submodule update --init & make
+
+Rebuilding Kizzy
+---------------------------------
+Change should be made to src/kizzy.js.  Including those changes in the kizzy build is as simple as calling make.
+
+    $ make
 
 Running tests
 ------------------
