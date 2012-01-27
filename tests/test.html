@@ -80,6 +80,41 @@
               ok(cache.get('hello') == 'world', 'value should keep');
             },750);
           });
+          test('cache should cleanup correctly with calls to kizzy.clearAllExpireds', 1, function() {
+            localStorage.clear();
+
+            cache = kizzy('foobar', 250);
+            cache.set('a', 'b', 500);
+            cache.set('b', 'c');
+            cache.set('c', 'd', 750);
+
+            kizzy('foo').set('a', 'b', 1000);
+            kizzy('bar').set('a', 'b', 1500);
+
+            setTimeout(function() {
+              kizzy.clearAllExpireds();
+              ok(cache.getSize() === 2, 'cache size should update');
+              ok(cache.get('b') === undefined, 'item with cache ns should be deleted if expired');
+              ok(localStorage.length === 3, 'localStorage length should keep');
+            },300);
+
+            setTimeout(function() {
+              kizzy.clearAllExpireds();
+              ok(localStorage['foobar'] === undefined || localStorage['foobar'] === null, 'foobar should no longer exist');
+              ok(cache.getSize() === 0, 'cache item should be empty');
+              ok(localStorage.length === 2, 'localStorage length should be one less');
+            },900);
+
+            setTimeout(function() {
+              kizzy.clearAllExpireds();
+              ok(localStorage.length === 1, 'localStorage length should be one less');
+            },1100);
+
+            setTimeout(function() {
+              kizzy.clearAllExpireds();
+              ok(localStorage.length === 0, 'localStorage length should be 0');
+            },1600);
+          });
         });
         start();
     </script>

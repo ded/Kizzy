@@ -12,13 +12,16 @@
 
   function noop() {}
   var hasLocalStorage
-    , doc = document
-    , store = doc.domain
+    , doc = null
     , html5 = 0
     , writeThrough = function () {
         return 1
       }
 
+  try {
+      doc = document;
+      store = doc.domain;
+  } catch (e) {}
 
   try {
     // HTML5 local storage
@@ -54,8 +57,10 @@
   if (hasLocalStorage) {
     setLocalStorage = html5 ? html5setLocalStorage : setUserData
     getLocalStorage = html5 ? html5getLocalStorage : getUserData
+    getNsLocalStorageSize = html5 ? html5getNsLocalStorageSize : getNsUserDataSize
     removeLocalStorage = html5 ? html5removeLocalStorage : removeUserData
     clearLocalStorage = html5 ? html5clearLocalStorage : clearUserData
+    clearAllExpireds = html5 ? html5clearExpireds : clearUserDataExpireds
 
     writeThrough = function (inst) {
       try {
@@ -87,8 +92,46 @@
     return typeof n === 'number' && isFinite(n)
   }
 
+  function html5clearExpireds() {
+    if(localStorage.length > 0) {
+      for (var key in localStorage) {
+        if (localStorage.hasOwnProperty(key)) {
+          try {
+            var obj = JSON.parse(localStorage[key]), entry, hasDeleted;
+            for(entry in obj) {
+              if (obj[entry] && obj[entry].e && obj[entry].e < +new Date()) {
+                  hasDeleted = true;
+                  delete obj[entry];
+              }
+            }
+            if(hasDeleted) {
+              localStorage[key] = JSON.stringify(obj);
+              if(html5getNsLocalStorageSize(key) === 0) {
+                delete localStorage[key];
+              }
+            }
+          } catch(ex) {}
+        }
+      }
+    }
+  }
+
   function html5getLocalStorage(k) {
     return localStorage[k]
+  }
+
+  function html5getNsLocalStorageSize(k) {
+    var size = 0, key, obj;
+    try {
+      obj = JSON.parse(localStorage[k]);
+      for (key in obj) {
+          if (obj.hasOwnProperty(key)) size++;
+      }
+      return size;
+    } catch (ex) {
+      html5removeLocalStorage(k);
+      return 0;
+    }
   }
 
   function html5setLocalStorage(inst, k, v) {
@@ -114,6 +157,14 @@
 
   function html5clearLocalStorage() {
     localStorage.clear()
+  }
+
+  function clearUserDataExpireds() {
+      throw "NotImplemented";
+  }
+
+  function getNsUserDataSize() {
+      throw "NotImplemented";
   }
 
   function getNodeByName(name) {
@@ -174,6 +225,7 @@
   _Kizzy.prototype = {
 
     set: function (k, v, optTtl) {
+      clearAllExpireds();
       this._[k] = {
         value: v,
         e: isNumber(optTtl) ? time() + optTtl : this.timeout && isNumber(this.timeout) ? time() + this.timeout : 0
@@ -190,6 +242,11 @@
     remove: function (k) {
       delete this._[k];
       writeThrough(this)
+    },
+
+    getSize: function () {
+      this.clearExpireds();
+      return getNsLocalStorageSize(this.ns);
     },
 
     clear: function () {
@@ -214,12 +271,13 @@
   Kizzy.prototype = _Kizzy.prototype
 
   function kizzy(ns, timeout) {
-    timeout = isNumber(timeout) ? timeout : 1000 * 60 * 3; // defaults to 3 minute expiration
+    timeout = isNumber(timeout) ? timeout : 1000 * 60 * 3;
     return new Kizzy(ns, timeout);
   }
 
   kizzy.remove = removeLocalStorage
   kizzy.clear = clearLocalStorage
+  kizzy.clearAllExpireds = clearAllExpireds
 
   return kizzy
 })
